@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -22,6 +23,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 public class RED  extends LinearOpMode {
 
     int tag=0;
+    int sleepTimer =3000;
+    int scanTimer=3000;
     private OpenCvCamera webcam1;
     private OpenCvCamera webcam2;
 
@@ -50,11 +53,13 @@ public class RED  extends LinearOpMode {
 //    public static Scalar scalarUpperYCrCb = new Scalar(255.0, 170.0, 120.0);
     ContourPipeline myPipeline1;
     ContourPipeline myPipeline2;
-    int color;
 
 
     public DcMotor LMotor;
     public DcMotor RMotor;
+    public DcMotor Arm;
+    double armSpeed = 0.5;
+    public Servo trapdoor;
 
     BNO055IMU imu;
     Orientation lastAngles = new Orientation();
@@ -81,7 +86,7 @@ public class RED  extends LinearOpMode {
      * The variable to store our instance of the vision portal.
      */
 
-    AprilTag aprilTag1;
+    OpticSysAprilTag aprilTag1;
     @Override
     public void runOpMode()
     {
@@ -101,11 +106,15 @@ public class RED  extends LinearOpMode {
 
         LMotor = hardwareMap.dcMotor.get ("L_Motor"); //check with driver hub
         RMotor = hardwareMap.dcMotor.get("R_Motor"); //check with driver hub
+        Arm = hardwareMap.dcMotor.get("Arm_Motor");
+        trapdoor = hardwareMap.servo.get("Trapdoor");
+
 
         LMotor.setDirection(DcMotor.Direction.REVERSE); //to be tested with chassis
 
         LMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         RMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         //The IMU does not initialize instantly. This makes it so the driver can see when they can push Play without errors.
@@ -117,9 +126,11 @@ public class RED  extends LinearOpMode {
 
         LMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         telemetry.addData("Path0",  "Starting at %7d :%7d",
                 LMotor.getCurrentPosition(),
@@ -139,7 +150,7 @@ public class RED  extends LinearOpMode {
 
 
         ////////////////////////////////////////////
-        color=0;
+       // color=0;
         myPipeline1 = new ContourPipeline(borderLeftX,borderRightX,borderTopY,borderBottomY);
         myPipeline2 = new ContourPipeline(borderLeftX,borderRightX,borderTopY,borderBottomY);
         // OpenCV webcam
@@ -160,7 +171,7 @@ public class RED  extends LinearOpMode {
         myPipeline2.configureScalarUpper(scalarUpperYCrCb.val[0],scalarUpperYCrCb.val[1],scalarUpperYCrCb.val[2]);
         // Webcam Streaming
 
-        webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        OpenCvCamera.AsyncCameraOpenListener listen1= new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened()
@@ -176,111 +187,144 @@ public class RED  extends LinearOpMode {
                  * This will be called if the camera could not be opened
                  */
             }
-        });
+        };
 
-        webcam2.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        OpenCvCamera.AsyncCameraOpenListener listen2=  new OpenCvCamera.AsyncCameraOpenListener()
+    {
+        @Override
+        public void onOpened()
         {
-            @Override
-            public void onOpened()
-            {
-                webcam2.setPipeline( myPipeline2);
-                webcam2.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-            }
+            webcam2.setPipeline( myPipeline2);
+            webcam2.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+        }
 
+        @Override
+        public void onError(int errorCode)
+        {
+            /*
+             * This will be called if the camera could not be opened
+             */
+        }
+    };
+
+
+        OpenCvCamera.AsyncCameraCloseListener listenClose1 = new OpenCvCamera.AsyncCameraCloseListener() {
             @Override
-            public void onError(int errorCode)
-            {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
+            public void onClose() {
+               // webcam1.stopStreaming();
+                webcam1.stopRecordingPipeline();
+                webcam1.closeCameraDevice();
             }
-        });
+        };
+        OpenCvCamera.AsyncCameraCloseListener listenClose2 = new OpenCvCamera.AsyncCameraCloseListener() {
+            @Override
+            public void onClose() {
+               // webcam2.stopStreaming();
+                webcam2.stopRecordingPipeline();
+                webcam2.closeCameraDevice();
+        }
+    };
+        webcam1.openCameraDeviceAsync(listen1);
+        webcam2.openCameraDeviceAsync(listen2);
         waitForStart();
         if(opModeIsActive())
         {
-            //encoderDrive(DRIVE_SPEED,  -24,  -24, 5);
+            encoderDrive(DRIVE_SPEED,  -24,  -24, 5);// Drive up to view front spike mark
 
-            sleep(200);
+            sleep(scanTimer);
             double go = run();
             telemetry.addData("location pending...", run());
             telemetry.update();
-            sleep(3000);
-           go= run();
+           /// sleep(3000);
+            go= run();
             telemetry.addData("location", go);
             telemetry.update();
 
+/*Pixel is straight ahead:
+    0. Set tag to 2, tag will later be set to 5 if it is a red OpMode
+    1. Push Pixel up to Spike Mark
+    2. Move back
+    3. Face Backboard
+ */
+            if(go==2)
+            {
+                tag = 2;
+                telemetry.addData("straight ahead",go);
+                telemetry.update();
+                encoderDrive(1,-24,-24,5);
+                encoderDrive(1,24,24,5);
+                rotate(90,DRIVE_SPEED);
 
-            aprilTag1 = new AprilTag(hardwareMap);
-            aprilTag1.initAprilTag();
-
-//
-//            if(go==2)
-//            {
-//                tag = 2;
-//                telemetry.addData("straight ahead",go);
-//                telemetry.update();
-//                encoderDrive(1,-24,-24,5);
-//                encoderDrive(1,24,24,5);
-//
-//            }
-//            else
-//            {
-//                telemetry.addData("NOT ", "Straight");
-//                telemetry.update();
-//                encoderDrive(1,-24,-24,5);
-//                sleep(5000);
-//                telemetry.addData("location pending", run());
-//                telemetry.update();
-//                go= run();
-//                telemetry.addData("location",go);
-//                telemetry.update();
-//                sleep(3000);
-//                if(go==1)
-//                {
-//                    tag = 1;
-//                    telemetry.addData("drive", " left");
-//                    telemetry.update();
-//                    rotate(50,DRIVE_SPEED);
-//                    encoderDrive(1,-20,-20,5);
-//                    encoderDrive(1,48,48,5);
-//                    rotate(-140,DRIVE_SPEED);
-//
-//
-//                }
-//                else
-//                {
-//                    tag = 3;
-//                    telemetry.addData("drive", " right");
-//                    telemetry.update();
-//                    rotate(-45,DRIVE_SPEED);
-//                    encoderDrive(1,-20,-20,5);
-//                    encoderDrive(1,48,48,5);
-//                    rotate(-45,DRIVE_SPEED);
-//                }
-//                //EDGE
-//                telemetry.addData("driving", " to face backboard");
-//                telemetry.update();
-//                //rotate(-45,DRIVE_SPEED);
-//
-//                //encoderDrive(1,24,24,5);
-//                //LONG
-//                //SHORT
-//                encoderDrive(1,-36,-36,5);
-//
-//                telemetry.update();
-//                sleep(3000);
-//
-//            }
-//
-//
-//            rotate(-85,DRIVE_SPEED); //rotating too far
-//            encoderDrive(1,-60,-60,5);
+            }
+/* Pixel is not straight ahead:
+    1. Drive up to spike marks
+    2. Check if Pixel is Left
+*/
+            else
+            {
+                telemetry.addData("NOT ", "Straight");
+                telemetry.update();
+                encoderDrive(1,-24,-24,5);
+                sleep(sleepTimer);
+                telemetry.addData("location pending", run());
+                telemetry.update();
+                go= run();
+                telemetry.addData("location",go);
+                telemetry.update();
+                sleep(sleepTimer);
+/* Pixel is Left
+    0. Set Tag to 1
+    1. Rotate to face spike mark
+    2. Push pixel to spike mark
+    3. Move Back
+    4. Face Backboard
+ */
+                if(go==1)
+                {
+                    tag = 1;
+                    telemetry.addData("drive", " left");
+                    telemetry.update();
+                    rotate(45,DRIVE_SPEED);
+                    encoderDrive(1,-20,-20,5);
+                    encoderDrive(1,48,48,5);
+                    rotate(-135,DRIVE_SPEED);
 
 
+                }
+/* By process of elimination, the team prop is right
+    0. Set tag to 3
+    1. Rotate to face spike mark
+    2. Push pixel
+    3. Move back
+    4. Face Backboard
+
+ */
+                else
+                {
+                    tag = 3;
+                    telemetry.addData("drive", " right");
+                    telemetry.update();
+                    rotate(-45,DRIVE_SPEED);
+                    encoderDrive(1,-20,-20,5);
+                    encoderDrive(1,48,48,5);
+                    rotate(-45,DRIVE_SPEED);
+                }
+
+            }
+            telemetry.addData("driving", " to face backboard");
+            telemetry.update();
+            encoderDrive(1,-36,-36,5); // Drive up to backboard
+
+            webcam1.closeCameraDeviceAsync(listenClose1); // Empty camera
+            webcam2.closeCameraDeviceAsync(listenClose2);
+//
+            aprilTag1 = new OpticSysAprilTag(hardwareMap); // Initialize Apriltag
+            aprilTag1.initAprilTag(); // Set up april tag with camera
             telemetry.update();
             telemetry.addData("april tag i hope ", aprilTag1.getTag());
             telemetry.update();
            // goToTag(aprilTag1.getTag());
+            //placePixel();
         }
     }
 
@@ -456,7 +500,9 @@ public class RED  extends LinearOpMode {
 
         globalAngle = 0;
     }
+/* Go to correct tag
 
+ */
     public void goToTag(int tag)
     {
        if( aprilTag1.getTag()== tag+3)
@@ -479,12 +525,16 @@ public class RED  extends LinearOpMode {
 
        }
     }
+
+/*
+Drive up to tag
+ */
     public void driveToTag()
     {
         double x = aprilTag1.getX();
         double y = aprilTag1.getY();
         double angle =  Math.tan(x/y);
-        double length = Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
+        double length = Math.sqrt(Math.pow(x,2)+Math.pow(y,2)); // set distance to travel as the hypotenuse of a triangle with x and y as sides
         rotate((int) angle, DRIVE_SPEED);
         encoderDrive(DRIVE_SPEED, (float) length, (float) length,5 );
         rotate(-90+(int)angle, DRIVE_SPEED );
@@ -492,7 +542,17 @@ public class RED  extends LinearOpMode {
     }
 
     public void placePIXEL()
-    {}
+    {
+        int target = 1500;
+        Arm.setTargetPosition(1500);
+        Arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LMotor.setPower(Math.abs(armSpeed));
+        trapdoor.setPosition(1.0);
+        sleep(2000);
+        trapdoor.setPosition(0.0);
+
+    }
+
 
 
 }

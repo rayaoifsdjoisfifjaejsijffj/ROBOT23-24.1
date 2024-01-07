@@ -2,21 +2,20 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name="Driving2gamepads", group="12417")
+@TeleOp(name="Driving2Gamepads", group="12417")
 
-public class DriverOp2gamepads extends LinearOpMode {
+public class DriverOp2Gamepads extends LinearOpMode {
 
 //declaration
     DcMotor LMotor;
     DcMotor RMotor;
     DcMotor Arm;
 
-    DcMotor Resistance;
+    //DcMotor Resistance;
     DcMotor Sweeper;
 
 //    CRServo sweepRight;
@@ -24,7 +23,7 @@ public class DriverOp2gamepads extends LinearOpMode {
 
     Servo trapdoor;
     Servo drone;
-    Servo rr;
+    //Servo rr;
 
     DigitalChannel breakBeam;
 
@@ -37,7 +36,7 @@ public class DriverOp2gamepads extends LinearOpMode {
         LMotor = hardwareMap.dcMotor.get("L_Motor");
         RMotor = hardwareMap.dcMotor.get("R_Motor");
         Arm = hardwareMap.dcMotor.get("Arm_Motor");
-        Resistance  = hardwareMap.dcMotor.get("Resistance");
+      //  Resistance  = hardwareMap.dcMotor.get("Resistance");
         Sweeper = hardwareMap.dcMotor.get("Sweeper");
 
 //        sweepRight = hardwareMap.crservo.get("Sweep_1");
@@ -45,7 +44,7 @@ public class DriverOp2gamepads extends LinearOpMode {
 
         trapdoor = hardwareMap.servo.get("Trapdoor");
         drone = hardwareMap.servo.get("Drone");
-        rr = hardwareMap.servo.get("RR");
+       // rr = hardwareMap.servo.get("RR");
 
         breakBeam = hardwareMap.digitalChannel.get("BreakBeam");
 
@@ -53,7 +52,7 @@ public class DriverOp2gamepads extends LinearOpMode {
         float MaxSpeed, SPwr=5f, LLPwr, LRPwr, RLPwr, RRPwr, APwr;
         trapdoor.setPosition(0.0); //check
         MaxSpeed = 0.7f;
-        APwr = 0.3f;
+        APwr = 0.6f;
 //booleans
         boolean isBeamBroke;
 
@@ -65,8 +64,8 @@ public class DriverOp2gamepads extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            DcMotor[] motors = {LMotor, RMotor, Arm, Resistance};
-            for (int i = 0; i < 4; i++) {
+            DcMotor[] motors = {LMotor, RMotor, Arm};
+            for (int i = 0; i < 3; i++) {
                 motors[i].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
@@ -101,15 +100,15 @@ public class DriverOp2gamepads extends LinearOpMode {
 //                    rr.setPosition(0);
 //                    telemetry.addLine("Beam broke");
 //                }
-                if(rr.getPosition()==2){
-                    rr.setPosition(0);
-                } else {
-                    rr.setPosition(2);
-                }
+//                if(rr.getPosition()==2){
+//                    rr.setPosition(0);
+//                } else {
+//                    rr.setPosition(2);
+//                }
             }
             if(gamepad1.a){
                 //sweep mode 2
-                rr.setPosition(0.515);
+                //rr.setPosition(0.515);
             }
 
             if(gamepad1.dpad_up){
@@ -157,7 +156,7 @@ public class DriverOp2gamepads extends LinearOpMode {
             if(gamepad2.b){
                 if(trapdoor.getPosition()==0.0){
                     trapdoor.setPosition(1.0);
-                    sleep(1000);
+                    sleep(2000);
                     trapdoor.setPosition(0.0);
                 } else{
                     trapdoor.setPosition(0.0);
@@ -177,19 +176,19 @@ public class DriverOp2gamepads extends LinearOpMode {
             if(gamepad2.left_bumper)
             {
                 //Arm down
-                Resistance.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                //Resistance.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 Arm.setPower(-APwr);
 
             }
             if(gamepad2.right_bumper)
             {
-                Resistance.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+               // Resistance.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 Arm.setPower(APwr);
             }
             if(gamepad2.left_bumper==gamepad2.right_bumper){
                 Arm.setPower(0);
             }
-            Resistance.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+           // Resistance.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
 //            sweepRight.setPower(SPwr);
@@ -201,7 +200,7 @@ public class DriverOp2gamepads extends LinearOpMode {
 //            telemetry.addData("hello", sweepRight.getPower());
 
             telemetry.addData("TICKS", Arm.getCurrentPosition());
-            telemetry.addData("Resistance", Resistance.getZeroPowerBehavior());
+            //telemetry.addData("Resistance", Resistance.getZeroPowerBehavior());
             telemetry.update();
 
 

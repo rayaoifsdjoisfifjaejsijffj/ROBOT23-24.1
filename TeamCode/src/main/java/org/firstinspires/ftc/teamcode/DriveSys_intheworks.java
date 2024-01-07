@@ -4,7 +4,6 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -13,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class DriveSys {
+public class DriveSys_intheworks {
 
 
     public DcMotor LMotor;
@@ -22,13 +21,13 @@ public class DriveSys {
     BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     float globalAngle;
-    OpticSys opticSys;
-    AprilTag aprilTag;
+    OpticSys_intheworks opticSys;
+    OpticSysAprilTag aprilTag;
 
 
-    public DriveSys(HardwareMap hardwareMap)
+    public DriveSys_intheworks(HardwareMap hardwareMap)
     {
-        opticSys = new OpticSys(hardwareMap,0);
+        opticSys = new OpticSys_intheworks(hardwareMap,0);
         //Initialize the IMU and its parameters.
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
