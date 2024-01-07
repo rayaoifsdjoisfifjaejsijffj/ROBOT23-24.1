@@ -23,13 +23,13 @@ public class Bot2DriveSys {
     BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     float globalAngle;
-    OpticSys opticSys;
-    AprilTag aprilTag;
+    OpticSysOpenCV opticSys;
+    //AprilTag aprilTag;
 
 
     public Bot2DriveSys(HardwareMap hardwareMap)
     {
-        opticSys = new OpticSys(hardwareMap,0);
+        opticSys = new OpticSysOpenCV(hardwareMap,0);
         //Initialize the IMU and its parameters.
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
