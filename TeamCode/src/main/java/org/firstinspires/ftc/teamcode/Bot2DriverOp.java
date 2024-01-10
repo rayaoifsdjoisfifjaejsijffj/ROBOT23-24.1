@@ -21,13 +21,9 @@ public class Bot2DriverOp extends LinearOpMode {
 //    private Servo jellyFish;
 
     private final float MAX_WHEEL_SPEED = 0.6f;
-    private final float maxClawArmSpd= 1f;
-    private final float maxClawHandSpd = 0.6f;
 
-    private final float clawPosition = 1.5f;
     private final float jellyFishPosition = 0.0f;
 
-    private final int clawArmMove = 1800;
     private final float SLIDE_FREEZE = 0.07f; //freezes jellyArm, counteracting gravitational force --> net force = 0
     private final int jellyDown = 0;
     private final int pos_rest = 1500;
@@ -125,9 +121,7 @@ public class Bot2DriverOp extends LinearOpMode {
                 //...
             }
             if (gamepad1.b) {
-                //open/close claw
-//                toggleClaw();
-
+                //...
             }
             if (gamepad1.x) {
                  //...
@@ -142,14 +136,14 @@ public class Bot2DriverOp extends LinearOpMode {
 
             }
             if (gamepad1.dpad_up) {
-                //set driving direction to linear-slide = front
+                //set driving direction forwards
                 FLMotor.setDirection(DcMotor.Direction.FORWARD);
                 BLMotor.setDirection(DcMotor.Direction.FORWARD);
                 FRMotor.setDirection(DcMotor.Direction.REVERSE);
                 BRMotor.setDirection(DcMotor.Direction.REVERSE);
             }
             if (gamepad1.dpad_down) {
-                //set driving direction to claw = front (backwards)
+                //set driving direction backwards
                 FLMotor.setDirection(DcMotor.Direction.REVERSE);
                 BLMotor.setDirection(DcMotor.Direction.REVERSE);
                 FRMotor.setDirection(DcMotor.Direction.FORWARD);
