@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class DriveSys {
 
 
-    public DcMotor LMotor;
+    public DcMotor FL;
     public DcMotor RMotor;
 
     BNO055IMU imu;
