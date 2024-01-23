@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -17,8 +15,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class Bot2DriveSys {
 
 
-    public DcMotor LMotor;
-    public DcMotor RMotor;
+    private DcMotor FLMotor;
+    private DcMotor FRMotor;
+    private DcMotor BLMotor;
+    private DcMotor BRMotor;
 
     BNO055IMU imu;
     Orientation lastAngles = new Orientation();
@@ -42,20 +42,30 @@ public class Bot2DriveSys {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        LMotor = hardwareMap.dcMotor.get ("L_Motor"); //check with driver hub
-        RMotor = hardwareMap.dcMotor.get("R_Motor"); //check with driver hub
+        FLMotor = hardwareMap.dcMotor.get ("FL_Motor"); //check with driver hub
+        FRMotor = hardwareMap.dcMotor.get("FR_Motor"); //check with driver hub
+        BLMotor = hardwareMap.dcMotor.get ("BL_Motor"); //check with driver hub
+        BRMotor = hardwareMap.dcMotor.get ("BR_Motor"); //check with driver hub
 
-        LMotor.setDirection(DcMotor.Direction.FORWARD); //to be tested with chassis
-        RMotor.setDirection(DcMotor.Direction.REVERSE); //to be tested with chassis
+        FLMotor.setDirection(DcMotor.Direction.FORWARD); //to be tested with chassis
+        FRMotor.setDirection(DcMotor.Direction.FORWARD); //to be tested with chassis
+        BLMotor.setDirection(DcMotor.Direction.FORWARD); //to be tested with chassis
+        BRMotor.setDirection(DcMotor.Direction.REVERSE); //to be tested with chassis
 
-        LMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        RMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        LMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         //variable for how fast the robot will move
@@ -67,35 +77,105 @@ public class Bot2DriveSys {
     //will use 20:1 HD Hex motor (revrobotics) + 90 mm grip wheels
     static final float     COUNTS_PER_MOTOR_REV    = 300f;
     static final float     DRIVE_GEAR_REDUCTION    = 1.0f;
-    static final float     WHEEL_DIAMETER_INCHES   = 3.54f;
+    static final float     WHEEL_DIAMETER_INCHES   = 3.78f;
     static final float     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415f);
     static final float     DRIVE_SPEED             = 0.6f; //can adjust
     static final float     TURN_SPEED              = 0.2f; //can adjust
-    public void drive(float inches) {
+    public void driveStraight(float inches) {
         int newLeftTarget;
         int newRightTarget;
 
 
-        // Determine new target position, and pass to motor controller
-        newLeftTarget = LMotor.getCurrentPosition() -(int)(inches * COUNTS_PER_INCH);
-        newRightTarget = RMotor.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
-        LMotor.setTargetPosition(-newLeftTarget);
-        RMotor.setTargetPosition(newRightTarget);
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = FLMotor.getCurrentPosition() -(int)(inches * COUNTS_PER_INCH);
+            newRightTarget = FRMotor.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+            FLMotor.setTargetPosition(-newLeftTarget);
+            FRMotor.setTargetPosition(newRightTarget);
 
-        // Turn On RUN_TO_POSITION
-        LMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            newLeftTarget = BLMotor.getCurrentPosition() -(int)(inches * COUNTS_PER_INCH);
+            newRightTarget = BRMotor.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+            BLMotor.setTargetPosition(-newLeftTarget);
+            BRMotor.setTargetPosition(newRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+       // LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+       // RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            // reset the timeout time and start motion.
+            //runtime.reset();
+        FLMotor.setPower(0.6);
+        FRMotor.setPower(0.6);
+        BLMotor.setPower(-0.6);
+        BRMotor.setPower(-0.6);
+            // Turn off RUN_TO_POSITION
+
+
+        BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // reset the timeout time and start motion.
         //runtime.reset();
-        LMotor.setPower(0.6);
-        RMotor.setPower(0.6);
+
 
         // Turn off RUN_TO_POSITION
-        LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+
+        }
+
+    public void driveStrafe(int inches)
+    {
+        int newFL;
+        int newBR;
+        int newFR;
+        int newBL;
+
+
+        // Determine new target position, and pass to motor controller
+        newFL = FLMotor.getCurrentPosition() +(int)(inches * COUNTS_PER_INCH);
+        newBR = FLMotor.getCurrentPosition() +(int)(inches * COUNTS_PER_INCH);
+        newFR = FRMotor.getCurrentPosition() - (int)(inches * COUNTS_PER_INCH);
+        newBL = FRMotor.getCurrentPosition() - (int)(inches * COUNTS_PER_INCH);
+        FLMotor.setTargetPosition(-newFL);
+        FRMotor.setTargetPosition(newBR);
+        FLMotor.setTargetPosition(-newFL);
+        FRMotor.setTargetPosition(newBR);
+
+
+        BLMotor.setTargetPosition(-newFL);
+        BRMotor.setTargetPosition(newBR);
+
+        // Turn On RUN_TO_POSITION
+        FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        // LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // reset the timeout time and start motion.
+        //runtime.reset();
+        FLMotor.setPower(0.6);
+        FRMotor.setPower(0.6);
+
+        // Turn off RUN_TO_POSITION
+        FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        // LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // reset the timeout time and start motion.
+        //runtime.reset();
+        BLMotor.setPower(0.6);
+        BRMotor.setPower(0.6);
+
+        // Turn off RUN_TO_POSITION
+        BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     //This method reads the IMU getting the angle. It automatically adjusts the angle so that it is between -180 and +180.
@@ -138,8 +218,10 @@ public class Bot2DriveSys {
         else return;
 
         //sets power to motors with negative signs properly assigned to make the robot go in the correct direction
-        LMotor.setPower(leftPower);
-        RMotor.setPower(rightPower);
+        FLMotor.setPower(leftPower);
+        FRMotor.setPower(rightPower);
+        BLMotor.setPower(leftPower);
+        BRMotor.setPower(rightPower);
 
         //Repeatedly check the IMU until the getAngle() function returns the value specified.
         if (degrees < 0)
@@ -153,8 +235,10 @@ public class Bot2DriveSys {
 
         //stop the motors after the angle has been found.
 
-        LMotor.setPower(0);
-        RMotor.setPower(0);
+        FLMotor.setPower(0);
+        FRMotor.setPower(0);
+        BLMotor.setPower(0);
+        BRMotor.setPower(0);
 
         //sleep for a bit to make sure the robot doesn't over sh
 
@@ -177,16 +261,16 @@ public class Bot2DriveSys {
         if(location==1)
         {
             rotate(45);
-            drive(10);
+            driveStraight(10);
         }
         else if(location==3)
         {
             rotate(-45);
-            drive(10);
+            driveStraight(10);
         }
         else
         {
-            drive(12);
+            driveStraight(12);
         }
         return opticSys.run();
     }
@@ -195,19 +279,19 @@ public class Bot2DriveSys {
         int location = opticSys.run();
         if(location==1)
         {
-            drive(-10);
+            driveStraight(-10);
             rotate(-45);
 
         }
         else if(location==3)
         {
-            drive(-10);
+            driveStraight(-10);
             rotate(45);
 
         }
         else
         {
-            drive(-12);
+            driveStraight(-12);
         }
         return opticSys.run();
     }
@@ -219,15 +303,21 @@ public class Bot2DriveSys {
         int angle=0;
         float distance=0;
         rotate(angle);
-        drive(distance);
+        driveStraight(distance);
         return aprilTag.getTag();
     }
-    public int getPos()
+    public int getFLPos()
     {
-        return LMotor.getCurrentPosition();
-    }    public int getRPos()
+        return FLMotor.getCurrentPosition();
+    }    public int getFRPos()
     {
-        return RMotor.getCurrentPosition();
+        return FRMotor.getCurrentPosition();
+    }
+    public int getBLPos(){
+        return BLMotor.getCurrentPosition();
+    }
+    public int getBrPos(){
+        return BRMotor.getCurrentPosition();
     }
 
 

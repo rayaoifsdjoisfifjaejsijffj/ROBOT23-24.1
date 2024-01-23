@@ -212,7 +212,7 @@ public class RED  extends LinearOpMode {
 
             aprilTag1 = new AprilTag(hardwareMap);
             aprilTag1.initAprilTag();
-
+//
 //
 //            if(go==2)
 //            {
