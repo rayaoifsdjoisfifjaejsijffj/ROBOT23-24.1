@@ -59,8 +59,7 @@ public class RedForReal extends LinearOpMode {
     1. Drive up to spike marks
     2. Check if Pixel is Left
 */
-            else
-            {
+            else            {
                 telemetry.addData("NOT ", "Straight");
                 telemetry.update();
                 m.driveStraight(-24);
