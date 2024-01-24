@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -48,7 +49,7 @@ public class DriveSys_intheworks {
 
         LMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         RMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        
+
         LMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -74,27 +75,27 @@ public class DriveSys_intheworks {
         int newRightTarget;
 
 
-            // Determine new target position, and pass to motor controller
-            newLeftTarget = LMotor.getCurrentPosition() -(int)(inches * COUNTS_PER_INCH);
-            newRightTarget = RMotor.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
-            LMotor.setTargetPosition(-newLeftTarget);
-            RMotor.setTargetPosition(newRightTarget);
+        // Determine new target position, and pass to motor controller
+        newLeftTarget = LMotor.getCurrentPosition() -(int)(inches * COUNTS_PER_INCH);
+        newRightTarget = RMotor.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+        LMotor.setTargetPosition(-newLeftTarget);
+        RMotor.setTargetPosition(newRightTarget);
 
-            // Turn On RUN_TO_POSITION
-            LMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            RMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       // LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       // RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            // reset the timeout time and start motion.
-            //runtime.reset();
+        // Turn On RUN_TO_POSITION
+        LMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        // LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // reset the timeout time and start motion.
+        //runtime.reset();
         LMotor.setPower(0.6);
         RMotor.setPower(0.6);
 
-            // Turn off RUN_TO_POSITION
-            LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // Turn off RUN_TO_POSITION
+        LMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        }
+    }
 
     //This method reads the IMU getting the angle. It automatically adjusts the angle so that it is between -180 and +180.
     public float getAngle()
