@@ -16,7 +16,7 @@ public class RedForReal extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        m= new MoveSys(hardwareMap);
+        m= new Bot2MoveSys(hardwareMap);
         o= new OpticSysOpenCV(hardwareMap, color);
         o.initOpenCV();
         o.startOpenCV();
