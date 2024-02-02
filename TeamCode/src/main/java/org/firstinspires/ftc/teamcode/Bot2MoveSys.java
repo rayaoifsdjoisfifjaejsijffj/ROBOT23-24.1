@@ -81,7 +81,7 @@ public class Bot2MoveSys {
 
     }
 
-    public void driveStraight(float inches) {
+    public void forward(float inches) {
         int newLeftTarget;
         int newRightTarget;
 
@@ -127,7 +127,7 @@ public class Bot2MoveSys {
 
 
     }
-    public void driveStrafe(int inches)
+    public void right(int inches)
     {
         int newFL;
         int newBR;
