@@ -10,7 +10,7 @@ public class RedForReal extends LinearOpMode {
     int color =0;
     int sleepTimer =3000;
     int scanTimer=3000;
-    MoveSys m;
+    Bot2MoveSys m;
     OpticSysOpenCV o;
     OpticSysAprilTag a;
 
