@@ -108,7 +108,7 @@ public class RedForReal extends LinearOpMode {
             }
             telemetry.addData("driving", " to face backboard");
             telemetry.update();
-            m.forward(-36); // Drive up to backboard
+            m.forward(36); // Drive up to backboard
 
             o.closeOpenCV();
             a= new OpticSysAprilTag(hardwareMap);
